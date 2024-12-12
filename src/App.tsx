@@ -2,6 +2,7 @@
 import "./App.css";
 import inventory from "./inventory.json";
 import React, { useState } from "react";
+import groupBy from "lodash/groupBy";
 
 function SearchBar({
   filterText,
@@ -35,53 +36,62 @@ function SearchBar({
   );
 }
 
-function ProductRows({
-  filterText,
-  inStockOnly,
-}: {
+interface ProductRowProps {
   filterText: string;
   inStockOnly: boolean;
-}) {
+}
+
+function ProductRows({ filterText, inStockOnly }: ProductRowProps) {
   const inventory_data: {
     category: string;
     price: string;
     stocked: boolean;
     name: string;
   }[] = inventory;
-  const items_per_category = Object.groupBy(
+  const items_per_category = groupBy(
     inventory_data,
     ({ category }) => category
   );
 
   const category_and_items = Object.entries(items_per_category);
 
-  return category_and_items.map(([category, items]) => (
-    <React.Fragment key={category}>
-      <tr>
-        <th colSpan={2}>{category}</th>
-      </tr>
-      {items?.map(({ name, price, stocked }) =>
-        (!inStockOnly || stocked) &&
-        name.toLowerCase().includes(filterText.toLowerCase()) ? (
-          <tr key={name}>
-            <td style={{ color: stocked ? "black" : "#1d7ea8" }}>{name}</td>
-            <td>{price}</td>
+  return (
+    <>
+      {category_and_items.map(([category, items], outer_index) => (
+        <React.Fragment key={category}>
+          <tr>
+            <th colSpan={2}>{category}</th>
           </tr>
-        ) : (
-          <></>
-        )
-      )}
-    </React.Fragment>
-  ));
+          {/* {items.map(({ name, price, stocked }, inner_index) =>
+            (!inStockOnly || stocked) &&
+            name.toLowerCase().includes(filterText.toLowerCase()) ? (
+              <tr key={name}>
+                <td style={{ color: stocked ? "black" : "#1d7ea8" }}>{name}</td>
+                <td>{price}</td>
+              </tr>
+            ) : (
+              <></>
+            )
+          )} */}
+          {items
+            .filter(
+              ({ name, stocked }) =>
+                (!inStockOnly || stocked) &&
+                name.toLowerCase().includes(filterText.toLowerCase())
+            )
+            .map(({ name, price, stocked }) => (
+              <tr key={`${category}-${name}`}>
+                <td style={{ color: stocked ? "black" : "#1d7ea8" }}>{name}</td>
+                <td>{price}</td>
+              </tr>
+            ))}
+        </React.Fragment>
+      ))}
+    </>
+  );
 }
 
-function ProductTable({
-  filterText,
-  inStockOnly,
-}: {
-  filterText: string;
-  inStockOnly: boolean;
-}) {
+function ProductTable({ filterText, inStockOnly }: ProductRowProps) {
   return (
     <table>
       <thead>
