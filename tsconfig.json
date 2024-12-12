@@ -1,0 +1,52 @@
+{
+  "compilerOptions": {
+    /*
+     * output management
+     */
+    "rootDir": "src", //points to the source files directory
+    "outDir": "./build/", // If specified, .js (as well as .d.ts, .js.map, etc.) files will be emitted into this directory. The directory structure of the original source files is preserved
+
+    /*
+     * code quality
+     */
+    "strict": true, // inherently make each file in strict mode
+    "noImplicitAny": true, // Raises errors for declarations with an implied any type
+    "noUncheckedIndexedAccess": true, // Protect against undefined values in object lookups.
+    "forceConsistentCasingInFileNames": true, // ensure no casing error in the file name when you import a file
+    "preserveConstEnums": true, //  the enum exists at runtime and the numbers are still emitted, refer to https://www.typescriptlang.org/tsconfig/#preserveConstEnums
+    "noImplicitOverride": true, // any overridden method must use the override keyword
+    "noFallthroughCasesInSwitch": true, // prevents unexpected behavior in switch statements by enforcing an error if a casefalls through without an explicit break, return, or throw
+
+    /*
+     * performance
+     */
+    "removeComments": true, // Strips all comments from TypeScript files when converting into JavaScript.
+    "skipLibCheck": true, // assumed the third-party libraries you used are already well-tested, reducing type-checking workload
+    // "incremental": true, // Only recompile what has changed
+    "allowUnreachableCode": false, // prevent unreachable code from sneaking into production, ensuring cleaner and more intentional code paths
+
+    /*
+     * compatibility controls
+     */
+    "target": "es6", // the target ECMAScript version to transpile our code down to. If set to "ESnext", best combined with Webpack/Vite
+    "module": "ESNext", // the module system for the program
+    "moduleResolution": "node", // controls how TypeScript resolves module imports
+    "esModuleInterop": true, // Allows default imports from CommonJS modules. You can cleanly import default exports from CommonJS modules, making it easier to integrate libraries.
+    "allowSyntheticDefaultImports": true, // allows developers to use default import syntax even when a module does not explicitly have a default export. Useful when working with CommonJS modules or legacy JavaScript libraries.
+    "resolveJsonModule": true, // Allows importing modules with a .json extension. TypeScript automatically typing it as any.
+    "allowJs": true, // Allows JavaScript files in the project (if you're transitioning from JS to TS).
+
+    /*
+     *debugging and testing
+     */
+    "sourceMap": true, // Generates a .js.map file next to the corresponding .js output file, allow debuggers and other tools to display the original TypeScript source code when actually working with the emitted JavaScript files.
+
+    /*
+     * essntials
+     */
+    "lib": ["dom", "dom.iterable", "esnext"], // a list of library files to the compilation
+    "jsx": "react-jsx" // Controls how JSX constructs are emitted in JavaScript files.
+  },
+  "include": ["**/*.tsx", "**/*.ts", "**/*.js", "typings/index.d.ts"],
+  "exclude": ["node_modules"]
+}
