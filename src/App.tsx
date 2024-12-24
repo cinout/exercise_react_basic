@@ -1,126 +1,29 @@
-// import logo from "./logo.svg";
-import "./App.css";
-import inventory from "./inventory.json";
-import React, { useState } from "react";
-import groupBy from "lodash/groupBy";
-
-function SearchBar({
-  filterText,
-  inStockOnly,
-  onChangeFilterText,
-  onChangeInStockOnly,
-}: {
-  filterText: string;
-  inStockOnly: boolean;
-  onChangeFilterText: (str: string) => void;
-  onChangeInStockOnly: (value: boolean) => void;
-}) {
-  return (
-    <form>
-      <input
-        type="text"
-        placeholder="Search..."
-        value={filterText}
-        onChange={(e) => onChangeFilterText(e.target.value)}
-      />
-      <br />
-      <label>
-        <input
-          type="checkbox"
-          checked={inStockOnly}
-          onChange={(e) => onChangeInStockOnly(e.target.checked)}
-        />
-        Only show products in stock
-      </label>
-    </form>
-  );
-}
-
-interface ProductRowProps {
-  filterText: string;
-  inStockOnly: boolean;
-}
-
-function ProductRows({ filterText, inStockOnly }: ProductRowProps) {
-  const inventory_data: {
-    category: string;
-    price: string;
-    stocked: boolean;
-    name: string;
-  }[] = inventory;
-  const items_per_category = groupBy(
-    inventory_data,
-    ({ category }) => category
-  );
-
-  const category_and_items = Object.entries(items_per_category);
-
-  return (
-    <>
-      {category_and_items.map(([category, items], outer_index) => (
-        <React.Fragment key={category}>
-          <tr>
-            <th colSpan={2}>{category}</th>
-          </tr>
-          {/* {items.map(({ name, price, stocked }, inner_index) =>
-            (!inStockOnly || stocked) &&
-            name.toLowerCase().includes(filterText.toLowerCase()) ? (
-              <tr key={name}>
-                <td style={{ color: stocked ? "black" : "#1d7ea8" }}>{name}</td>
-                <td>{price}</td>
-              </tr>
-            ) : (
-              <></>
-            )
-          )} */}
-          {items
-            .filter(
-              ({ name, stocked }) =>
-                (!inStockOnly || stocked) &&
-                name.toLowerCase().includes(filterText.toLowerCase())
-            )
-            .map(({ name, price, stocked }) => (
-              <tr key={`${category}-${name}`}>
-                <td style={{ color: stocked ? "black" : "#1d7ea8" }}>{name}</td>
-                <td>{price}</td>
-              </tr>
-            ))}
-        </React.Fragment>
-      ))}
-    </>
-  );
-}
-
-function ProductTable({ filterText, inStockOnly }: ProductRowProps) {
-  return (
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <ProductRows filterText={filterText} inStockOnly={inStockOnly} />
-      </tbody>
-    </table>
-  );
-}
+import { useEffect, useState, useMemo } from "react";
+import debounce from "lodash/debounce";
 
 function App() {
-  const [filterText, setFilterText] = useState<string>("");
-  const [inStockOnly, setInStockOnly] = useState<boolean>(false);
-  return (
-    <div className="App">
-      <SearchBar
-        filterText={filterText}
-        inStockOnly={inStockOnly}
-        onChangeFilterText={setFilterText}
-        onChangeInStockOnly={setInStockOnly}
-      />
-      <ProductTable filterText={filterText} inStockOnly={inStockOnly} />
-    </div>
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  // debounce returns a new function each time it is called. Use useMemo instead of useCallback for this case.
+  const handleWindowSizeChange = useMemo(
+    () =>
+      debounce(() => {
+        setWindowWidth(window.innerWidth);
+      }, 300),
+    []
   );
+
+  useEffect(() => {
+    window.addEventListener("resize", handleWindowSizeChange);
+
+    return () => {
+      handleWindowSizeChange.cancel(); // clean up debounce
+      window.removeEventListener("resize", handleWindowSizeChange);
+    };
+  }, [handleWindowSizeChange]);
+
+  const isMobile = windowWidth <= 500;
+  return isMobile ? <div>Mobile View</div> : <div>Desktop View</div>;
 }
 
 export default App;

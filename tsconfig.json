@@ -45,8 +45,14 @@
      * essntials
      */
     "lib": ["dom", "dom.iterable", "esnext"], // a list of library files to the compilation
-    "jsx": "react-jsx" // Controls how JSX constructs are emitted in JavaScript files.
+    "jsx": "react-jsx" //  Enables the new JSX Transform. Controls how JSX constructs are emitted in JavaScript files.
   },
-  "include": ["**/*.tsx", "**/*.ts", "**/*.js", "typings/index.d.ts"],
+  "include": [
+    "**/*.tsx",
+    "**/*.ts",
+    "**/*.js",
+    "typings/index.d.ts",
+    "src/Debug.tsc"
+  ],
   "exclude": ["node_modules"]
 }
